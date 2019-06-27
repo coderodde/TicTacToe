@@ -1,0 +1,2 @@
+target/*
+!target/TicTacToe-1.6.jar
