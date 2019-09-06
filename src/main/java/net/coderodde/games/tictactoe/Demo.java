@@ -1,13 +1,17 @@
 package net.coderodde.games.tictactoe;;
 
 import java.util.Objects;
-import java.util.Random;
 import java.util.Scanner;
 import net.coderodde.games.tictactoe.impl.Human;
 import net.coderodde.games.tictactoe.impl.SmartBot;
 import net.coderodde.zerosum.ai.EvaluatorFunction;
-import net.coderodde.zerosum.ai.GameEngine;
-import net.coderodde.zerosum.ai.impl.AlphaBetaPruningGameEngine;
+import net.coderodde.zerosum.ai.AbstractGameEngine;
+import net.coderodde.zerosum.ai.impl.MinimaxGameEngine;
+import java.util.Objects;
+import java.util.Scanner;
+import net.coderodde.games.tictactoe.impl.Human;
+import net.coderodde.games.tictactoe.impl.SmartBot;
+import net.coderodde.zerosum.ai.EvaluatorFunction;
 import net.coderodde.zerosum.ai.impl.MinimaxGameEngine;
 
 /**
@@ -20,24 +24,25 @@ public class Demo {
 
     public static final double MAX_WEIGHT_MATRIX_ENTRY = 10.0;
     
-    public static final int DEFAULT_SEARCH_DEPTH = 10;
+    public static final int DEFAULT_SEARCH_DEPTH = 11;
     
     public static void main(String[] args) {
-        Random random = new Random();
-        
         EvaluatorFunction<TicTacToeState> evaluatorFunction1 = 
                 new TicTacToeEvaluatorFunction();
         
-        GameEngine<TicTacToeState, PlayerColor> gameEngine = 
-                new AlphaBetaPruningGameEngine<>(evaluatorFunction1, 
-                                                 DEFAULT_SEARCH_DEPTH);
+        AbstractGameEngine<TicTacToeState, TicTacToePlayerColor> gameEngine = 
+                new MinimaxGameEngine<TicTacToeState,
+                                      TicTacToePlayerColor>(
+                                              evaluatorFunction1, 
+                                              DEFAULT_SEARCH_DEPTH);
         // 'bot3' is connected to cin:
-        Bot bot3 = new Human(PlayerColor.MAXIMIZING_PLAYER, 
+        Bot bot3 = new Human(TicTacToePlayerColor.MAXIMIZING_PLAYER, 
                              "X >>> ", 
                              new Scanner(System.in));
         
-        Bot bot4 = new SmartBot(PlayerColor.MINIMIZING_PLAYER, gameEngine);
-        playMatch(bot3, bot4);
+        Bot bot4 = new SmartBot(TicTacToePlayerColor.MINIMIZING_PLAYER, 
+                                gameEngine);
+        playMatch(bot4, bot3);
     }
     
     /**
@@ -54,12 +59,10 @@ public class Demo {
         
         // bot1 begins the game.
         Bot currentBot = bot1;
-        PlayerColor winner = null;
+        TicTacToePlayerColor winner = null;
         
         // While there is room in the board:
         while (!state.isFull()) {
-            state.setDepth(0);
-            
             if (currentBot == bot1) {
                 state = bot1.computeNextState(state);
                 winner = state.checkVictory();
@@ -87,22 +90,7 @@ public class Demo {
         System.out.println(state);
         
         if (winner != null) {
-            char winnerChar;
-        
-            switch (winner) {
-                case MAXIMIZING_PLAYER:
-                    winnerChar = PlayerColor.MINIMIZING_PLAYER.getChar();
-                    break;
-                    
-                case MINIMIZING_PLAYER:
-                    winnerChar = PlayerColor.MAXIMIZING_PLAYER.getChar();
-                    break;
-                    
-                default:
-                    throw new IllegalStateException(
-                            "Unknown player: " + winner);
-            }
-            
+            char winnerChar = winner.getChar();
             System.out.println("RESULT: The " + winnerChar + " won!");
         } else {
             System.out.println("RESULT: It's a draw!");

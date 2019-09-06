@@ -1,35 +1,63 @@
 package net.coderodde.games.tictactoe;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
-import net.coderodde.zerosum.ai.State;
+import net.coderodde.zerosum.ai.AbstractState;
 
 /**
  * This class implements the Tic Tac Toe board state.
  * 
  * @author Rodion "rodde" Efremov
- * @version 1.6 (Jun 16, 2019)
+ * @version 1.61 (Aug 25, 2019)
+ * @since 1.6 (Jun 16, 2019)
  */
-public final class TicTacToeState implements State<TicTacToeState> {
+public final class TicTacToeState 
+     extends AbstractState<TicTacToeState, TicTacToePlayerColor> {
     
+    /**
+     * The width of Tic Tac Toe boards.
+     */
     public static final int WIDTH = 3;
+    
+    /**
+     * The height of Tic Tac Toe boards.
+     */
     public static final int HEIGHT = 3;
 
-    private final PlayerColor playerColor;
-    private final int numberOfEmptySlots;
-    private Collection<TicTacToeState> children;
-    private int depth;
-    final PlayerColor[][] board;
+    /**
+     * The color of the player
+     */
+    private final TicTacToePlayerColor playerColor;
     
-    public TicTacToeState(PlayerColor playerColor) {
+    /**
+     * The number of empty slots.
+     */
+    private final int numberOfEmptySlots;
+    
+    /**
+     * The collection of immediate child Tic Tac Toe boards.
+     */
+    private List<TicTacToeState> children;
+    
+    /**
+     * The depth of this board state.
+     */
+    private int depth;
+    
+    /**
+     * The actual Tic Tac Toe board state.
+     */
+    final TicTacToePlayerColor[][] board;
+    
+    public TicTacToeState(TicTacToePlayerColor playerColor) {
         this.playerColor = playerColor;
-        this.board = new PlayerColor[HEIGHT][WIDTH];
+        this.board = new TicTacToePlayerColor[HEIGHT][WIDTH];
         this.numberOfEmptySlots = HEIGHT * WIDTH;
     }
     
-    private TicTacToeState(PlayerColor playerColor,
-                           PlayerColor[][] board,
+    private TicTacToeState(TicTacToePlayerColor playerColor,
+                           TicTacToePlayerColor[][] board,
                            int numberOfEmptySlots,
                            int depth) {
         this.numberOfEmptySlots = numberOfEmptySlots;
@@ -38,8 +66,8 @@ public final class TicTacToeState implements State<TicTacToeState> {
         this.depth = depth;
     }
     
-    private PlayerColor[][] cloneBoard(PlayerColor[][] board) {
-        PlayerColor[][] clone = new PlayerColor[board.length]
+    private TicTacToePlayerColor[][] cloneBoard(TicTacToePlayerColor[][] board) {
+        TicTacToePlayerColor[][] clone = new TicTacToePlayerColor[board.length]
                                                [board[0].length];
         for (int y = 0; y < board.length; y++) {
             for (int x = 0; x < board[0].length; x++) {
@@ -59,27 +87,18 @@ public final class TicTacToeState implements State<TicTacToeState> {
     }
     
     @Override
-    public Collection<TicTacToeState> children() {
+    public List<TicTacToeState> children() {
         if (children != null) {
             return children;
         }
         
         children = new ArrayList<>(numberOfEmptySlots);
-        PlayerColor childColor = playerColor == PlayerColor.MAXIMIZING_PLAYER ?
-                PlayerColor.MINIMIZING_PLAYER :
-                PlayerColor.MAXIMIZING_PLAYER;
         
         for (int y = 0; y < board.length; y++) {
             for (int x = 0; x < board[0].length; x++) {
                 if (board[y][x] == null) {
-//                    PlayerColor[][] boardClone = cloneBoard(board);
-//                    boardClone[y][x] = childColor;
-//                    TicTacToeState childState = 
-//                            new TicTacToeState(childColor, 
-//                                               board, 
-//                                               numberOfEmptySlots - 1, 
-//                                               depth - 1);
                     TicTacToeState childState = move(x, y);
+                    childState.setDepth(depth - 1);
                     children.add(childState);
                 }
             }
@@ -88,21 +107,78 @@ public final class TicTacToeState implements State<TicTacToeState> {
         return children;
     }
     
-    public PlayerColor checkVictory() {
+    public TicTacToePlayerColor checkVictory() {
+        TicTacToePlayerColor playerColor = checkMaximizingVictory();
+        
+        if (playerColor == null) {
+            return checkMinimizingVictory();
+        } else {
+            return playerColor;
+        }
+    }
+    
+    private TicTacToePlayerColor checkMaximizingVictory() {
+        return checkVictory(TicTacToePlayerColor.MAXIMIZING_PLAYER);
+    }
+    
+    private TicTacToePlayerColor checkMinimizingVictory() {
+        return checkVictory(TicTacToePlayerColor.MINIMIZING_PLAYER);
+    }
+    
+    private TicTacToePlayerColor checkVictory(TicTacToePlayerColor playerColor) {
+        outer1:
+        for (int y = 0; y < HEIGHT; y++) {
+            for (int x = 0; x < WIDTH; x++) {
+                if (playerColor != read(x, y)) {
+                    continue outer1;
+                }
+            }
+            
+            return playerColor;
+        }
+        
+        outer2:
+        for (int x = 0; x < WIDTH; x++) {
+            for (int y = 0; y < HEIGHT; y++) {
+                if (playerColor != read(x, y)) {
+                    continue outer2;
+                }
+            }
+            
+            return playerColor;
+        }
+        
+        for (int i = 0; i < WIDTH; i++) {
+            if (playerColor != read(i, i)) {
+                break;
+            } else if (i == WIDTH - 1) {
+                return playerColor;
+            }
+        }
+        
+        for (int i = 0; i < WIDTH; i++) {
+            if (playerColor != read(i, WIDTH - 1 - i)) {
+                break;
+            } else if (i == WIDTH - 1) {
+                return playerColor;
+            }            
+        }
+        
         return null;
     }
     
     private static final String HORIZONTAL_BAR1 = "+-------+-------+-------+\n";
     private static final String HORIZONTAL_BAR2 = "|       |       |       |\n";
    
-    private static char getChar(PlayerColor playerColor) {
+    private static char getChar(TicTacToePlayerColor playerColor) {
         return playerColor != null ? playerColor.getChar() : ' ';
     }
     
-    private static final String row(PlayerColor[] rowData) {
+    private static final String row(TicTacToePlayerColor[] rowData) {
         return "|   " + getChar(rowData[0]) + 
-              "   |   " + getChar(rowData[1]) + 
-              "   |   " + getChar(rowData[2]) + "   |\n";
+            "   |   " + getChar(rowData[1]) + 
+            "   |   " + getChar(rowData[2]) + 
+            "   |\n";
     }
     
     @Override
@@ -130,7 +206,7 @@ public final class TicTacToeState implements State<TicTacToeState> {
         
         outer1:
         for (int y = 0; y < HEIGHT; y++) {
-            PlayerColor playerColor = read(0, y);
+            TicTacToePlayerColor playerColor = read(0, y);
             
             if (playerColor == null) {
                 break;
@@ -147,7 +223,7 @@ public final class TicTacToeState implements State<TicTacToeState> {
         
         outer2:
         for (int x = 0; x < WIDTH; x++) {
-            PlayerColor playerColor = read(x, 0);
+            TicTacToePlayerColor playerColor = read(x, 0);
             
             if (playerColor == null) {
                 break;
@@ -162,7 +238,7 @@ public final class TicTacToeState implements State<TicTacToeState> {
             return true;
         }
         
-        PlayerColor playerColor = read(0, 0);
+        TicTacToePlayerColor playerColor = read(0, 0);
         
         if (playerColor != null) {
             for (int i = 1; i < WIDTH; i++) {
@@ -194,10 +270,10 @@ public final class TicTacToeState implements State<TicTacToeState> {
     }
     
     public TicTacToeState move(int x, int y) {
-        PlayerColor nextPlayerColor = 
-                playerColor == PlayerColor.MAXIMIZING_PLAYER ? 
-                PlayerColor.MINIMIZING_PLAYER :
-                PlayerColor.MAXIMIZING_PLAYER;
+        TicTacToePlayerColor nextPlayerColor = 
+                playerColor == TicTacToePlayerColor.MAXIMIZING_PLAYER ? 
+                TicTacToePlayerColor.MINIMIZING_PLAYER :
+                TicTacToePlayerColor.MAXIMIZING_PLAYER;
         
         TicTacToeState nextState = 
                 new TicTacToeState(nextPlayerColor,
@@ -208,13 +284,13 @@ public final class TicTacToeState implements State<TicTacToeState> {
         return nextState;
     }
     
-    public PlayerColor read(int x, int y) {
+    public TicTacToePlayerColor read(int x, int y) {
         checkXCoordinate(x);
         checkYCoordinate(y);
         return board[y][x];
     }
     
-    public void write(int x, int y, PlayerColor player) {
+    public void write(int x, int y, TicTacToePlayerColor player) {
         checkXCoordinate(x);
         checkYCoordinate(y);
         board[y][x] = Objects.requireNonNull(player, "The player is null.");

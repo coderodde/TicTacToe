@@ -4,7 +4,7 @@ import java.util.InputMismatchException;
 import java.util.Objects;
 import java.util.Scanner;
 import net.coderodde.games.tictactoe.Bot;
-import net.coderodde.games.tictactoe.PlayerColor;
+import net.coderodde.games.tictactoe.TicTacToePlayerColor;
 import net.coderodde.games.tictactoe.TicTacToeState;
 
 /**
@@ -18,7 +18,7 @@ public final class Human implements Bot {
     /**
      * The color of this human.
      */
-    private final PlayerColor myPlayerColor;
+    private final TicTacToePlayerColor myPlayerColor;
     
     /**
      * The command prompt for the user input.
@@ -30,7 +30,7 @@ public final class Human implements Bot {
      */
     private final Scanner scanner;
     
-    public Human(PlayerColor me, String commandPrompt, Scanner scanner) {
+    public Human(TicTacToePlayerColor me, String commandPrompt, Scanner scanner) {
         this.myPlayerColor = 
                 Objects.requireNonNull(me, "The input player is null.");
         
@@ -103,7 +103,7 @@ public final class Human implements Bot {
     }
 
     @Override
-    public PlayerColor getPlayerColor() {
+    public TicTacToePlayerColor getPlayerColor() {
         return myPlayerColor;
     }
 }

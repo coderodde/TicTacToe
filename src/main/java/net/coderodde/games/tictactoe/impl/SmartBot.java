@@ -2,9 +2,9 @@ package net.coderodde.games.tictactoe.impl;
 
 import java.util.Objects;
 import net.coderodde.games.tictactoe.Bot;
-import net.coderodde.games.tictactoe.PlayerColor;
+import net.coderodde.games.tictactoe.TicTacToePlayerColor;
 import net.coderodde.games.tictactoe.TicTacToeState;
-import net.coderodde.zerosum.ai.GameEngine;
+import net.coderodde.zerosum.ai.AbstractGameEngine;
 
 /**
  * This class implements the smart bot relying on Alpha-beta pruning.
@@ -14,11 +14,12 @@ import net.coderodde.zerosum.ai.GameEngine;
  */
 public final class SmartBot implements Bot {
     
-    private final PlayerColor myPlayerColor;
-    private final GameEngine<TicTacToeState, PlayerColor> engine;
+    private final TicTacToePlayerColor myPlayerColor;
+    private final AbstractGameEngine<TicTacToeState, TicTacToePlayerColor> engine;
     
-    public SmartBot(PlayerColor me, 
-                    GameEngine<TicTacToeState, PlayerColor> engine) {
+    public SmartBot(TicTacToePlayerColor me, 
+                    AbstractGameEngine<TicTacToeState,
+                                       TicTacToePlayerColor> engine) {
         this.myPlayerColor =
                 Objects.requireNonNull(me, "The input player is null.");
         
@@ -32,8 +33,8 @@ public final class SmartBot implements Bot {
         long startTime = System.currentTimeMillis();
         TicTacToeState nextState = 
                 engine.makePly(state, 
-                               PlayerColor.MINIMIZING_PLAYER, 
-                               PlayerColor.MAXIMIZING_PLAYER, 
+                               TicTacToePlayerColor.MINIMIZING_PLAYER, 
+                               TicTacToePlayerColor.MAXIMIZING_PLAYER, 
                                myPlayerColor);
         long endTime = System.currentTimeMillis();
         System.out.println("SmartBot in " + (endTime - startTime) + " ms:");
@@ -41,7 +42,7 @@ public final class SmartBot implements Bot {
     }
 
     @Override
-    public PlayerColor getPlayerColor() {
+    public TicTacToePlayerColor getPlayerColor() {
         return myPlayerColor;
     }
 }

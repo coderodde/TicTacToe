@@ -6,14 +6,14 @@ package net.coderodde.games.tictactoe;
  * @author Rodion "rodde" Efremov
  * @version 1.6 (Jun 27, 2019)
  */
-public enum PlayerColor {
+public enum TicTacToePlayerColor {
     
     MAXIMIZING_PLAYER('X'),
     MINIMIZING_PLAYER('O');
     
     private final char ch;
     
-    private PlayerColor(char ch) {
+    private TicTacToePlayerColor(char ch) {
         this.ch = ch;
     }
     

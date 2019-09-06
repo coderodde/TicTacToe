@@ -19,5 +19,5 @@ public interface Bot {
      * Returns the player color of this bot.
      * @return the player color of this bot.
      */
-    public PlayerColor getPlayerColor();
+    public TicTacToePlayerColor getPlayerColor();
 }
