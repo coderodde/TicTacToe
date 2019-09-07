@@ -12,11 +12,6 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>net.coderodde.connectfour.ai</groupId>
-            <artifactId>GameAI</artifactId>
-            <version>1.6</version>
-        </dependency>
-        <dependency>
             <groupId>net.coderodde.zerosum.ai</groupId>
             <artifactId>GameAI</artifactId>
             <version>1.6</version>

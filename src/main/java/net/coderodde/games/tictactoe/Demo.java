@@ -1,12 +1,6 @@
 package net.coderodde.games.tictactoe;;
 
-import java.util.Objects;
-import java.util.Scanner;
-import net.coderodde.games.tictactoe.impl.Human;
-import net.coderodde.games.tictactoe.impl.SmartBot;
-import net.coderodde.zerosum.ai.EvaluatorFunction;
 import net.coderodde.zerosum.ai.AbstractGameEngine;
-import net.coderodde.zerosum.ai.impl.MinimaxGameEngine;
 import java.util.Objects;
 import java.util.Scanner;
 import net.coderodde.games.tictactoe.impl.Human;
@@ -31,10 +25,9 @@ public class Demo {
                 new TicTacToeEvaluatorFunction();
         
         AbstractGameEngine<TicTacToeState, TicTacToePlayerColor> gameEngine = 
-                new MinimaxGameEngine<TicTacToeState,
-                                      TicTacToePlayerColor>(
-                                              evaluatorFunction1, 
-                                              DEFAULT_SEARCH_DEPTH);
+                new MinimaxGameEngine<TicTacToeState, TicTacToePlayerColor>(evaluatorFunction1, 
+                                        DEFAULT_SEARCH_DEPTH);
+        
         // 'bot3' is connected to cin:
         Bot bot3 = new Human(TicTacToePlayerColor.MAXIMIZING_PLAYER, 
                              "X >>> ", 
