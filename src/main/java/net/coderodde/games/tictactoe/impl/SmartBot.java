@@ -15,7 +15,8 @@ import net.coderodde.zerosum.ai.AbstractGameEngine;
 public final class SmartBot implements Bot {
     
     private final TicTacToePlayerColor myPlayerColor;
-    private final AbstractGameEngine<TicTacToeState, TicTacToePlayerColor> engine;
+    private final AbstractGameEngine<TicTacToeState, 
+                                     TicTacToePlayerColor> engine;
     
     public SmartBot(TicTacToePlayerColor me, 
                     AbstractGameEngine<TicTacToeState,

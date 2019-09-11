@@ -10,20 +10,58 @@ import net.coderodde.zerosum.ai.EvaluatorFunction;
  */
 public final class TicTacToeEvaluatorFunction 
         implements EvaluatorFunction<TicTacToeState> {
+    
+    private static final double[][] weightMatrix = new double[3][3];
+    
+    static {
+        weightMatrix[0][0] = 1.0;
+        weightMatrix[0][1] = 8.0;
+        weightMatrix[0][2] = 1.0;
+        weightMatrix[1][0] = 1.0;
+        weightMatrix[1][1] = 64.0;
+        weightMatrix[1][2] = 1.0;
+        weightMatrix[2][0] = 1.0;
+        weightMatrix[2][1] = 8.0;
+        weightMatrix[2][2] = 1.0;
+    }
 
     @Override
-    public double evaluate(TicTacToeState s) {
-        TicTacToePlayerColor winningPlayerColor = s.checkVictory();
+    public double evaluate(TicTacToeState state) {
+        TicTacToePlayerColor playerColor;
+        double value = 0.0;
         
-        if (winningPlayerColor == null) {
-            return 0.0;
-        } else if (winningPlayerColor 
-                == TicTacToePlayerColor.MAXIMIZING_PLAYER) {
-            return 100.0 + s.getDepth();
-        } else {
-            return -100.0 - s.getDepth();
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 3; x++) {
+                if ((playerColor = state.read(x, y)) == null) {
+                    continue;
+                }
+                
+                double weight = weightMatrix[y][x];
+                
+                if (playerColor == TicTacToePlayerColor.MINIMIZING_PLAYER) {
+                    value -= weight;
+                } else {
+                    value += weight;
+                }
+            }
         }
+        
+        return value;
     }
+
+//    @Override
+//    public double evaluate(TicTacToeState s) {
+//        TicTacToePlayerColor winningPlayerColor = s.checkVictory();
+//        
+//        if (winningPlayerColor == null) {
+//            return 0.0;
+//        } else if (winningPlayerColor 
+//                == TicTacToePlayerColor.MAXIMIZING_PLAYER) {
+//            return 100.0 + s.getDepth();
+//        } else {
+//            return -100.0 - s.getDepth();
+//        }
+//    }
 //        int maximizingWinningPatternCount = 
 //                countWinningPatterns(s.board, PlayerColor.MAXIMIZING_PLAYER);
 //        

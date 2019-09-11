@@ -48,7 +48,7 @@ public final class TicTacToeState
     /**
      * The actual Tic Tac Toe board state.
      */
-    final TicTacToePlayerColor[][] board;
+    private final TicTacToePlayerColor[][] board;
     
     public TicTacToeState(TicTacToePlayerColor playerColor) {
         this.playerColor = playerColor;
@@ -67,8 +67,10 @@ public final class TicTacToeState
     }
     
     private TicTacToePlayerColor[][] cloneBoard(TicTacToePlayerColor[][] board) {
-        TicTacToePlayerColor[][] clone = new TicTacToePlayerColor[board.length]
-                                               [board[0].length];
+        TicTacToePlayerColor[][] clone = 
+                new TicTacToePlayerColor[board.length]
+                                        [board[0].length];
+        
         for (int y = 0; y < board.length; y++) {
             for (int x = 0; x < board[0].length; x++) {
                 clone[y][x] = board[y][x];
@@ -280,6 +282,7 @@ public final class TicTacToeState
                                    board, 
                                    numberOfEmptySlots - 1,
                                    depth - 1);
+        
         nextState.write(x, y, playerColor);
         return nextState;
     }

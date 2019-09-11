@@ -18,14 +18,15 @@ public class Demo {
 
     public static final double MAX_WEIGHT_MATRIX_ENTRY = 10.0;
     
-    public static final int DEFAULT_SEARCH_DEPTH = 11;
+    public static final int DEFAULT_SEARCH_DEPTH = 1;
     
     public static void main(String[] args) {
         EvaluatorFunction<TicTacToeState> evaluatorFunction1 = 
                 new TicTacToeEvaluatorFunction();
         
         AbstractGameEngine<TicTacToeState, TicTacToePlayerColor> gameEngine = 
-                new MinimaxGameEngine<TicTacToeState, TicTacToePlayerColor>(evaluatorFunction1, 
+                new MinimaxGameEngine<TicTacToeState, TicTacToePlayerColor>(
+                                        evaluatorFunction1, 
                                         DEFAULT_SEARCH_DEPTH);
         
         // 'bot3' is connected to cin:
@@ -58,7 +59,6 @@ public class Demo {
         while (!state.isFull()) {
             if (currentBot == bot1) {
                 state = bot1.computeNextState(state);
-                winner = state.checkVictory();
                 
                 if (winner != null) {
                     break;
