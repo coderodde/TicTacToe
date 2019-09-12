@@ -6,6 +6,7 @@ import java.util.Scanner;
 import net.coderodde.games.tictactoe.impl.Human;
 import net.coderodde.games.tictactoe.impl.SmartBot;
 import net.coderodde.zerosum.ai.EvaluatorFunction;
+import net.coderodde.zerosum.ai.impl.AlphaBetaPruningGameEngine;
 import net.coderodde.zerosum.ai.impl.MinimaxGameEngine;
 
 /**
@@ -18,14 +19,15 @@ public class Demo {
 
     public static final double MAX_WEIGHT_MATRIX_ENTRY = 10.0;
     
-    public static final int DEFAULT_SEARCH_DEPTH = 1;
+    public static final int DEFAULT_SEARCH_DEPTH = 11;
     
     public static void main(String[] args) {
         EvaluatorFunction<TicTacToeState> evaluatorFunction1 = 
                 new TicTacToeEvaluatorFunction();
         
         AbstractGameEngine<TicTacToeState, TicTacToePlayerColor> gameEngine = 
-                new MinimaxGameEngine<TicTacToeState, TicTacToePlayerColor>(
+                new AlphaBetaPruningGameEngine<TicTacToeState,
+                                      TicTacToePlayerColor>(
                                         evaluatorFunction1, 
                                         DEFAULT_SEARCH_DEPTH);
         
@@ -59,6 +61,7 @@ public class Demo {
         while (!state.isFull()) {
             if (currentBot == bot1) {
                 state = bot1.computeNextState(state);
+                winner = state.checkVictory();
                 
                 if (winner != null) {
                     break;

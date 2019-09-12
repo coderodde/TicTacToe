@@ -14,15 +14,15 @@ public final class TicTacToeEvaluatorFunction
     private static final double[][] weightMatrix = new double[3][3];
     
     static {
-        weightMatrix[0][0] = 1.0;
-        weightMatrix[0][1] = 8.0;
-        weightMatrix[0][2] = 1.0;
+        weightMatrix[0][0] = 8.0;
+        weightMatrix[0][1] = 1.0;
+        weightMatrix[0][2] = 8.0;
         weightMatrix[1][0] = 1.0;
         weightMatrix[1][1] = 64.0;
         weightMatrix[1][2] = 1.0;
-        weightMatrix[2][0] = 1.0;
-        weightMatrix[2][1] = 8.0;
-        weightMatrix[2][2] = 1.0;
+        weightMatrix[2][0] = 8.0;
+        weightMatrix[2][1] = 1.0;
+        weightMatrix[2][2] = 8.0;
     }
 
     @Override
@@ -44,6 +44,14 @@ public final class TicTacToeEvaluatorFunction
                     value += weight;
                 }
             }
+        }
+        
+        TicTacToePlayerColor winnerColor = state.checkVictory();
+        
+        if (winnerColor == TicTacToePlayerColor.MINIMIZING_PLAYER) {
+            return -1000.0 - state.getDepth() + value;
+        } else if (winnerColor == TicTacToePlayerColor.MAXIMIZING_PLAYER) {
+            return 1000.0 + state.getDepth() + value;
         }
         
         return value;
